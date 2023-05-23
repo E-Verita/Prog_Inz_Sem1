@@ -36,7 +36,7 @@ public class FirstController {
 		return "product";
 	}
 
-	//http://localhost:8686/productOne?title=Avokado
+	// http://localhost:8686/productOne?title=Avokado
 	@GetMapping("/productOne")
 	public String productByParamFunction(@RequestParam("title") String title, Model model) throws Exception {
 		if (title != null) {
@@ -49,8 +49,8 @@ public class FirstController {
 		}
 		return "error-page";
 	}
-	
-	//http://localhost:8686/product/Avokado
+
+	// http://localhost:8686/product/Avokado
 	@GetMapping("/product/{title}")
 	public String productByParamFunction2(@PathVariable("title") String title, Model model) throws Exception {
 		if (title != null) {
@@ -63,11 +63,29 @@ public class FirstController {
 		}
 		return "error-page";
 	}
-	
+
 	@GetMapping("/allproducts")
 	public String allProductsFunc(Model model) {
 		model.addAttribute("myAllProducts", allProducts);
 		return "all-products-page";
 	}
-	
+
+	// TODO kontrolieri, kas izfiltrē visus produktus, kuru cena ir mazaka par
+	// padoto vērtību
+	@GetMapping("/allproducts/{price}")
+	public String allProductsByPrice(@PathVariable("price") float price, Model model) {
+
+		if (price > 0) {
+			ArrayList<Product> allProductsBellowPrice = new ArrayList<>();
+			for (Product temp : allProducts) {
+				if (temp.getPrice() <= price) {
+					allProductsBellowPrice.add(temp);
+				}
+			}
+			model.addAttribute("myAllProducts", allProductsBellowPrice);
+			return "all-products-page";
+		}
+		return "error-page";
+	}
+
 }
