@@ -50,6 +50,7 @@ public class FirstController {
 		return "error-page";
 	}
 	
+	//http://localhost:8686/product/Avokado
 	@GetMapping("/product/{title}")
 	public String productByParamFunction2(@PathVariable("title") String title, Model model) throws Exception {
 		if (title != null) {
@@ -62,4 +63,11 @@ public class FirstController {
 		}
 		return "error-page";
 	}
+	
+	@GetMapping("/allproducts")
+	public String allProductsFunc(Model model) {
+		model.addAttribute("myAllProducts", allProducts);
+		return "all-products-page";
+	}
+	
 }
