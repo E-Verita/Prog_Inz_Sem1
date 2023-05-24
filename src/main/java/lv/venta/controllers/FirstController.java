@@ -6,11 +6,13 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.validation.Valid;
 import lv.venta.models.Product;
 import lv.venta.services.ICRUDProductService;
 import lv.venta.services.IFilteringProductService;
@@ -102,10 +104,15 @@ public class FirstController {
 	}
 
 	@PostMapping("/insert")
-	public String insertProductPostFunc(Product product) { // saņemts aizpildīts (no form) produkts
-		crudService.insertProductByParams(product.getTitle(), product.getPrice(), product.getDescription(),
-				product.getQuantity());
-		return "redirect:/allproducts"; // aiziet uz get mapping /allproducts
+	public String insertProductPostFunc(@Valid Product product, BindingResult result) { // saņemts aizpildīts (no form)
+																						// // produkts
+		if (!result.hasErrors()) {
+			crudService.insertProductByParams(product.getTitle(), product.getPrice(), product.getDescription(),
+					product.getQuantity());
+			return "redirect:/allproducts"; // aiziet uz get mapping /allproducts
+		} else {
+			return "insert-page";
+		}
 	}
 
 	@GetMapping("/update/{id}")
@@ -119,13 +126,19 @@ public class FirstController {
 	}
 
 	@PostMapping("/update/{id}")
-	public String updateProductByIdPostFunc(@PathVariable("id") int id, Product product) { // ienāķ redigētais produkts
-		try {
-			Product temp = crudService.updateProductByParams(id, product.getTitle(), product.getPrice(),
-					product.getDescription(), product.getQuantity());
-			return "redirect:/product/" + temp.getTitle();
-		} catch (Exception e) {
-			return "redirect:/error";
+	public String updateProductByIdPostFunc(@PathVariable("id") int id, @Valid Product product, BindingResult result) { // ienāķ
+																														// redigētais
+																														// produkts
+		if (!result.hasErrors()) {
+			try {
+				Product temp = crudService.updateProductByParams(id, product.getTitle(), product.getPrice(),
+						product.getDescription(), product.getQuantity());
+				return "redirect:/product/" + temp.getTitle();
+			} catch (Exception e) {
+				return "redirect:/error";
+			}
+		} else {
+			return "update-page";
 		}
 	}
 
