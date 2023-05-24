@@ -7,14 +7,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import lv.venta.models.Product;
 
 @Controller
 public class FirstController {
-	ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(new Product("Ābols", 3.99f, "Sarkans", 3),
-			new Product("Tomāts", 1.99f, "Dzeltens", 12), new Product("Avokado", 0.99f, "Zaļš", 10)));
+	ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(new Product("Abols", 3.99f, "Sarkans", 3),
+			new Product("Tomats", 1.99f, "Dzeltens", 12), new Product("Avokado", 0.99f, "Zals", 10)));
 
 	@GetMapping("/hello")
 	public String helloFuntion() {
@@ -88,4 +89,61 @@ public class FirstController {
 		return "error-page";
 	}
 
+	@GetMapping("/insert")
+	public String insertProductFunc(Product product) { // padots tukšs produkts
+		return "insert-page";
+	}
+
+	@PostMapping("/insert")
+	public String insertProductPostFunc(Product product) { // saņemts aizpildīts (no form) produkts
+		Product prod = new Product(product.getTitle(), product.getPrice(), product.getDescription(),
+				product.getQuantity());
+		allProducts.add(prod);
+		return "redirect:/allproducts"; // aiziet uz get mapping /allproducts
+	}
+
+	@GetMapping("/update/{id}")
+	public String updateProductByIdGetFunc(@PathVariable("id") int id, Model model) {
+		for (Product temp : allProducts) {
+			if (temp.getId() == id) {
+				model.addAttribute("product", temp);
+				return "update-page";
+			}
+		}
+		return "error-page";
+	}
+
+	@PostMapping("/update/{id}")
+	public String updateProductByIdPostFunc(@PathVariable("id") int id, Product product) { // ienāķ redigētais produkts
+		for (Product temp : allProducts) {
+			if (temp.getId() == id) {
+				temp.setTitle(product.getTitle());
+				temp.setPrice(product.getPrice());
+				temp.setDescription(product.getDescription());
+				temp.setQuantity(product.getQuantity());
+				return "redirect:/product/" + product.getTitle();
+			}
+		}
+		return "redirect:/error";
+	}
+	
+	@GetMapping("/error")
+	public String errorFunc() { // padots tukšs produkts
+		return "error-page";
+	}
+
+	@GetMapping("/delete/{id}")
+	public String deleteProductById(@PathVariable("id") int id, Model model) { // padots tukšs produkts
+		for (Product temp : allProducts) {
+			if (temp.getId() == id) {
+				allProducts.remove(temp);
+				model.addAttribute("myAllProducts", allProducts);
+				return "all-products-page";
+			}
+		}
+		return "error-page";
+		
+	}
+
+	
 }
