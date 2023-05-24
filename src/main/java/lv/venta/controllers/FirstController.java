@@ -3,6 +3,7 @@ package lv.venta.controllers;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,11 +12,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import lv.venta.models.Product;
+import lv.venta.services.ICRUDProductService;
+import lv.venta.services.IFilteringProductService;
 
 @Controller
 public class FirstController {
-	ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(new Product("Abols", 3.99f, "Sarkans", 3),
-			new Product("Tomats", 1.99f, "Dzeltens", 12), new Product("Avokado", 0.99f, "Zals", 10)));
+
+	@Autowired
+	private IFilteringProductService filterService;
+
+	@Autowired
+	private ICRUDProductService crudService;
 
 	@GetMapping("/hello")
 	public String helloFuntion() {
@@ -41,25 +48,30 @@ public class FirstController {
 	@GetMapping("/productOne")
 	public String productByParamFunction(@RequestParam("title") String title, Model model) throws Exception {
 		if (title != null) {
-			for (Product temp : allProducts) {
-				if (temp.getTitle().equals(title)) {
-					model.addAttribute("myProduct", temp);
-					return "product";
-				}
+			try {
+				Product temp = crudService.retrieveOneProductByTitle(title);
+				model.addAttribute("myProduct", temp);
+				return "product";
+			} catch (Exception e) {
+				e.printStackTrace();
+				return "error-page";
 			}
 		}
 		return "error-page";
+
 	}
 
 	// http://localhost:8686/product/Avokado
 	@GetMapping("/product/{title}")
 	public String productByParamFunction2(@PathVariable("title") String title, Model model) throws Exception {
 		if (title != null) {
-			for (Product temp : allProducts) {
-				if (temp.getTitle().equals(title)) {
-					model.addAttribute("myProduct", temp);
-					return "product";
-				}
+			try {
+				Product temp = crudService.retrieveOneProductByTitle(title);
+				model.addAttribute("myProduct", temp);
+				return "product";
+			} catch (Exception e) {
+				e.printStackTrace();
+				return "error-page";
 			}
 		}
 		return "error-page";
@@ -67,7 +79,7 @@ public class FirstController {
 
 	@GetMapping("/allproducts")
 	public String allProductsFunc(Model model) {
-		model.addAttribute("myAllProducts", allProducts);
+		model.addAttribute("myAllProducts", crudService.retrieveAllProducts());
 		return "all-products-page";
 	}
 
@@ -77,12 +89,7 @@ public class FirstController {
 	public String allProductsByPrice(@PathVariable("price") float price, Model model) {
 
 		if (price > 0) {
-			ArrayList<Product> allProductsBellowPrice = new ArrayList<>();
-			for (Product temp : allProducts) {
-				if (temp.getPrice() <= price) {
-					allProductsBellowPrice.add(temp);
-				}
-			}
+			ArrayList<Product> allProductsBellowPrice = filterService.filterByPriceLess(price);
 			model.addAttribute("myAllProducts", allProductsBellowPrice);
 			return "all-products-page";
 		}
@@ -96,37 +103,32 @@ public class FirstController {
 
 	@PostMapping("/insert")
 	public String insertProductPostFunc(Product product) { // saņemts aizpildīts (no form) produkts
-		Product prod = new Product(product.getTitle(), product.getPrice(), product.getDescription(),
+		crudService.insertProductByParams(product.getTitle(), product.getPrice(), product.getDescription(),
 				product.getQuantity());
-		allProducts.add(prod);
 		return "redirect:/allproducts"; // aiziet uz get mapping /allproducts
 	}
 
 	@GetMapping("/update/{id}")
 	public String updateProductByIdGetFunc(@PathVariable("id") int id, Model model) {
-		for (Product temp : allProducts) {
-			if (temp.getId() == id) {
-				model.addAttribute("product", temp);
-				return "update-page";
-			}
+		try {
+			model.addAttribute("product", crudService.retrieveOneProductById(id));
+			return "update-page";
+		} catch (Exception e) {
+			return "error-page";
 		}
-		return "error-page";
 	}
 
 	@PostMapping("/update/{id}")
 	public String updateProductByIdPostFunc(@PathVariable("id") int id, Product product) { // ienāķ redigētais produkts
-		for (Product temp : allProducts) {
-			if (temp.getId() == id) {
-				temp.setTitle(product.getTitle());
-				temp.setPrice(product.getPrice());
-				temp.setDescription(product.getDescription());
-				temp.setQuantity(product.getQuantity());
-				return "redirect:/product/" + product.getTitle();
-			}
+		try {
+			Product temp = crudService.updateProductByParams(id, product.getTitle(), product.getPrice(),
+					product.getDescription(), product.getQuantity());
+			return "redirect:/product/" + temp.getTitle();
+		} catch (Exception e) {
+			return "redirect:/error";
 		}
-		return "redirect:/error";
 	}
-	
+
 	@GetMapping("/error")
 	public String errorFunc() { // padots tukšs produkts
 		return "error-page";
@@ -134,16 +136,13 @@ public class FirstController {
 
 	@GetMapping("/delete/{id}")
 	public String deleteProductById(@PathVariable("id") int id, Model model) { // padots tukšs produkts
-		for (Product temp : allProducts) {
-			if (temp.getId() == id) {
-				allProducts.remove(temp);
-				model.addAttribute("myAllProducts", allProducts);
-				return "all-products-page";
-			}
+		try {
+			crudService.deleteProductById(id);
+			model.addAttribute("myAllProducts", crudService.retrieveAllProducts());
+			return "all-products-page";
+		} catch (Exception e) {
+			return "error-page";
 		}
-		return "error-page";
-		
 	}
 
-	
 }

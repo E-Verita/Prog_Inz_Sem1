@@ -14,7 +14,7 @@ public class ProductServiceImpl implements ICRUDProductService, IFilteringProduc
 
 	ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(new Product("Abols", 3.99f, "Sarkans", 3),
 			new Product("Tomats", 1.99f, "Dzeltens", 12), new Product("Avokado", 0.99f, "Zals", 10)));
-	
+
 	@Override
 	public ArrayList<Product> retrieveAllProducts() {
 		return allProducts;
@@ -29,7 +29,6 @@ public class ProductServiceImpl implements ICRUDProductService, IFilteringProduc
 		}
 		throw new Exception("Wrong ID!");
 	}
-	
 
 	@Override
 	public Product retrieveOneProductByTitle(String title) throws Exception {
@@ -54,7 +53,6 @@ public class ProductServiceImpl implements ICRUDProductService, IFilteringProduc
 		allProducts.add(newProduct);
 		return newProduct;
 	}
-	
 
 	@Override
 	public Product updateProductByParams(int id, String title, float price, String description, int quantity)
@@ -73,12 +71,17 @@ public class ProductServiceImpl implements ICRUDProductService, IFilteringProduc
 
 	@Override
 	public void deleteProductById(int id) throws Exception {
+		boolean isFound = false;
 		for (Product temp : allProducts) {
 			if (temp.getId() == id) {
 				allProducts.remove(temp);
+				isFound = true;
+				break;
 			}
 		}
-		throw new Exception("No product with this ID!");
+		if (!isFound) {
+			throw new Exception("No product with this ID!");
+		}
 	}
 
 	@Override
