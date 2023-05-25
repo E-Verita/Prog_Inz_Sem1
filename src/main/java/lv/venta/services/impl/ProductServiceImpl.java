@@ -9,7 +9,6 @@ import lv.venta.models.Product;
 import lv.venta.services.ICRUDProductService;
 import lv.venta.services.IFilteringProductService;
 
-@Service
 public class ProductServiceImpl implements ICRUDProductService, IFilteringProductService {
 
 	ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(new Product("Abols", 3.99f, "Sarkans", 3),
@@ -27,33 +26,37 @@ public class ProductServiceImpl implements ICRUDProductService, IFilteringProduc
 				return temp;
 			}
 		}
-		throw new Exception("Wrong ID!");
+		throw new Exception("Wrong id");
 	}
 
 	@Override
 	public ArrayList<Product> retrieveAllProductsByTitle(String title) throws Exception {
-		if (title != null) {
+		if(title != null) {
 			ArrayList<Product> allProductsWithTitle = new ArrayList<>();
 			for (Product temp : allProducts) {
 				if (temp.getTitle().equals(title)) {
 					allProductsWithTitle.add(temp);
+		
 				}
 			}
 			return allProductsWithTitle;
-		} else {
-			throw new Exception("Wrong title!");
+		}
+		else
+		{
+			throw new Exception("Wrong title");
 		}
 	}
 
 	@Override
 	public Product insertProductByParams(String title, float price, String description, int quantity) {
 		for (Product temp : allProducts) {
-			if (temp.getTitle().equals(title) && temp.getDescription().equals(description)
-					&& temp.getPrice() == price) {
+			if (temp.getTitle().equals(title) && temp.getPrice() == price
+					&& temp.getDescription().equals(description)) {
 				temp.setQuantity(temp.getQuantity() + quantity);
 				return temp;
 			}
 		}
+
 		Product newProduct = new Product(title, price, description, quantity);
 		allProducts.add(newProduct);
 		return newProduct;
@@ -71,7 +74,7 @@ public class ProductServiceImpl implements ICRUDProductService, IFilteringProduc
 				return temp;
 			}
 		}
-		throw new Exception("No product with this ID!");
+		throw new Exception("Wrong id");
 	}
 
 	@Override
@@ -84,9 +87,11 @@ public class ProductServiceImpl implements ICRUDProductService, IFilteringProduc
 				break;
 			}
 		}
-		if (!isFound) {
-			throw new Exception("No product with this ID!");
+		if(!isFound)
+		{
+			throw new Exception("Wrong id");
 		}
+
 	}
 
 	@Override
@@ -104,5 +109,4 @@ public class ProductServiceImpl implements ICRUDProductService, IFilteringProduc
 		return new ArrayList<>();
 
 	}
-
 }

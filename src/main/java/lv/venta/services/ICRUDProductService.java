@@ -25,8 +25,6 @@ public interface ICRUDProductService {
 		//delete
 		void deleteProductById(int id) throws Exception;
 
-		ArrayList<Product> filterByPriceLess(float price);
-
 	
 
 }

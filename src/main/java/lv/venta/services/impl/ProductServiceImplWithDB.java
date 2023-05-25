@@ -32,8 +32,8 @@ public class ProductServiceImplWithDB implements ICRUDProductService, IFiltering
 
 	@Override
 	public ArrayList<Product> retrieveAllProductsByTitle(String title) throws Exception {
-		if(title!=null) {
-			ArrayList<Product> allProductsWithTitle = productRepo.retrieveAllProductsByTitle(title);
+		if (title != null) {
+			ArrayList<Product> allProductsWithTitle = productRepo.findByTitle(title);
 			return allProductsWithTitle;
 		} else {
 			throw new Exception("Wrong title!");
@@ -63,7 +63,7 @@ public class ProductServiceImplWithDB implements ICRUDProductService, IFiltering
 	@Override
 	public void deleteProductById(int id) throws Exception {
 		if (productRepo.existsById(id)) {
-		productRepo.deleteById(id);
+			productRepo.deleteById(id);
 		} else {
 			throw new Exception("Wrong Id");
 		}

@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-@Table(name="priduct_table") //db pusē izveidosies tabula
+@Table(name="product_table") //db pusē izveidosies tabula
 @Entity
 public class Product {
 	
