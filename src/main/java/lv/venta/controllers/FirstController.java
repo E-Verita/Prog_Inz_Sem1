@@ -51,9 +51,9 @@ public class FirstController {
 	public String productByParamFunction(@RequestParam("title") String title, Model model) throws Exception {
 		if (title != null) {
 			try {
-				Product temp = crudService.retrieveOneProductByTitle(title);
-				model.addAttribute("myProduct", temp);
-				return "product";
+				ArrayList <Product> temp = crudService.retrieveAllProductsByTitle(title);
+				model.addAttribute("myAllProducts", temp);
+				return "all-products-page";
 			} catch (Exception e) {
 				e.printStackTrace();
 				return "error-page";
@@ -68,9 +68,9 @@ public class FirstController {
 	public String productByParamFunction2(@PathVariable("title") String title, Model model) throws Exception {
 		if (title != null) {
 			try {
-				Product temp = crudService.retrieveOneProductByTitle(title);
-				model.addAttribute("myProduct", temp);
-				return "product";
+				ArrayList <Product> temp = crudService.retrieveAllProductsByTitle(title);
+				model.addAttribute("myAllProducts", temp);
+				return "all-products-page";
 			} catch (Exception e) {
 				e.printStackTrace();
 				return "error-page";
