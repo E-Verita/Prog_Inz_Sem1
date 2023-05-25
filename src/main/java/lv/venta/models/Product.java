@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -43,6 +45,11 @@ public class Product {
 	@Min(value=0)
 	@Max(value=10000)
 	private int quantity;
+	
+	@ManyToOne
+	@JoinColumn(name="Idc") //otras klases PK
+	private Customer customer;
+	
 	
 	public int getId() {
 		return id;
